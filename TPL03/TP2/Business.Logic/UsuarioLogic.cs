@@ -7,7 +7,7 @@ using Business.Entities;
 using Data.Database;
 namespace Business.Logic
 {
-    class UsuarioLogic:BusinessLogic
+    public class UsuarioLogic:BusinessLogic
     {
         
 
@@ -31,24 +31,24 @@ namespace Business.Logic
                 //constructor
             }
 
-            public void GetOne()
+            public Business.Entities.Usuario GetOne(int ID)
             {
-
+                 return _UsuarioData.GetOne(ID);
             }
 
-            //public List<Usuario> GetAll()
-            //{
-            //return 
-            // }
+        public List<Usuario> GetAll()
+        {
+            return _UsuarioData.GetAll();
+        }
 
-        public void Save()
+            public void Save(Business.Entities.Usuario UsuarioIngresado)
             {
-
+                        Save(UsuarioIngresado); 
             }
-
-            public void Delete()
+ 
+            public void Delete(int ID)
             {
-
+                _UsuarioData.Delete(ID);
             }
         }
 
