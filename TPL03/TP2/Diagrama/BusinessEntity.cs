@@ -6,9 +6,13 @@ namespace Diagrama
 {
     public class BusinessEntity
     {
-      
+        public enum States
+        {
+            Deleted, New, Modified, Unmodified
+        }
+
         private int _ID;
-        private States _States;
+        private States _State;
 
         public int ID
         {
@@ -18,14 +22,12 @@ namespace Diagrama
             }
         }
 
-        public States States
+        public States State
         {
             get => default;
             set
             {
             }
         }
-
-         
     }
 }

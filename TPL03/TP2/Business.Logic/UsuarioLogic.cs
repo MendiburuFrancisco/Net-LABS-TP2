@@ -28,7 +28,7 @@ namespace Business.Logic
 
             public UsuarioLogic()
             {
-                //constructor
+                 UsuarioData = new UsuarioAdapter();
             }
 
             public Business.Entities.Usuario GetOne(int ID)
