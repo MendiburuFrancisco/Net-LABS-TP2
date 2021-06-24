@@ -44,10 +44,10 @@ namespace UI.Consola
             {
                 case 1: ListadoGeneral();  break;
                 case 2: Consultar();  break;
-                case 3:    break;
-                case 4: break;
-                case 5: break;
-                case 6: break;
+                case 3: Agregar();  break;
+                case 4: Modificar();  break;
+                case 5: Eliminar();  break;
+            
             }
 
 
