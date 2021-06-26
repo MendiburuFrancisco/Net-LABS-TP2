@@ -7,8 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Business.Logic;
 using Business.Entities;
-using Business.Logic; 
 
 namespace UI.Desktop
 {
@@ -20,33 +20,73 @@ namespace UI.Desktop
             this.dgvUsuarios.AutoGenerateColumns = false;
         }
 
-        private void btnActualizar_Click(object sender, EventArgs e)
+        private void toolStripContainer1_TopToolStripPanel_Click(object sender, EventArgs e)
         {
-            Listar();
+
+        }
+
+        
+        public void Listar()
+        {
+            UsuarioLogic ul = new UsuarioLogic();
+            this.dgvUsuarios.DataSource = ul.GetAll();
+
+            id.DataPropertyName = "ID";
+            nombre.DataPropertyName = "Nombre";
+            apellido.DataPropertyName = "Apellido";
+            usuario.DataPropertyName = "NombreUsuario";
+            email.DataPropertyName = "EMail";
+            habilitado.DataPropertyName = "Habilitado";
         }
 
         private void Usuarios_Load(object sender, EventArgs e)
         {
             Listar();
-
         }
 
-        public void Listar()
+        private void btnActualizar_Click(object sender, EventArgs e)
         {
-            UsuarioLogic ul = new UsuarioLogic();
-            this.dgvUsuarios.DataSource =  ul.GetAll();
-            id.DataPropertyName = "ID";
-            nombre.DataPropertyName = "Nombre";
-            apellido.DataPropertyName = "Apellido";
-            usuario.DataPropertyName = "Usuario";
-            email.DataPropertyName = "EMail";
-            habilitado.DataPropertyName = "Habilitado";
+            Listar();
         }
 
         private void btnSalir_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
+        private void tlUsuarios_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void tsbNuevo_Click(object sender, EventArgs e)
+        {
+            UsuarioDesktop ud = new UsuarioDesktop(ApplicationForm.ModoForm.Alta);
+            ud.ShowDialog();
+            Listar();
+        }
+
+        private void tsbEdiar_Click(object sender, EventArgs e)
+        {
+            if (dgvUsuarios.SelectedRows != null)
+            {
+                int id = ((Business.Entities.Usuario)dgvUsuarios.SelectedRows[0].DataBoundItem).ID;
+                UsuarioDesktop ud = new UsuarioDesktop(id, ApplicationForm.ModoForm.Modificacion);
+                ud.ShowDialog();
+                Listar();
+            }
+            else if(dgvUsuarios.SelectedRows == null)
+            {
+                MessageBox.Show("Error", "Seleccione un Usuario\n para edirar", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void tsbEliminar_Click(object sender, EventArgs e)
+        {
+            int id = ((Business.Entities.Usuario)dgvUsuarios.SelectedRows[0].DataBoundItem).ID;
+            UsuarioDesktop ud = new UsuarioDesktop(id, ApplicationForm.ModoForm.Baja);
+            ud.ShowDialog();
+            Listar();
+        }
     }
 }
