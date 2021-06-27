@@ -7,34 +7,71 @@ using Business.Entities;
 using Data.Database;
 using System.Data.SqlClient;
 using System.Data;
+using System.Configuration;
 
 namespace Business.Logic
 {
-    public class UsuarioLogic:BusinessLogic
+    public class UsuarioLogic : BusinessLogic
     {
         public UsuarioLogic()
         {
             UsuarioData = new UsuarioAdapter();
         }
+        //Clave por defecto a utlizar para la cadena de conexion
+        const string consKeyDefaultCnnString = "ConnStringLocal";
 
-         UsuarioAdapter _UsuarioData;
+        //  private SqlConnection sqlConnection = new SqlConnection("ConnectionString;");
+        //private SqlConnection sqlConnection = new SqlConnection(consKeyDefaultCnnString);
 
-            public  UsuarioAdapter UsuarioData
+        private SqlConnection _sqlConn;
+        public SqlConnection sqlConn
+        {
+            get { return _sqlConn; }
+            set { _sqlConn = value; }
+        }
+
+        protected void OpenConnection()
+        {
+            string connectionString = ConfigurationManager.ConnectionStrings[consKeyDefaultCnnString].ConnectionString;
+            SqlConnection sqlConn = new SqlConnection(connectionString);
+            sqlConn.Open();
+            throw new Exception("Metodo no implementado");
+
+        }
+
+        protected void CloseConnection()
+        {
+            sqlConn.Close();
+            sqlConn = null;
+            throw new Exception("Metodo no implementado");
+        }
+
+        protected SqlDataReader ExecuteReader(String commandText)
+        {
+            throw new Exception("Metodo no implementado");
+        }
+
+
+
+
+        UsuarioAdapter _UsuarioData;
+
+        public UsuarioAdapter UsuarioData
+        {
+            get
             {
-                get
-                {
-                    return _UsuarioData;
-                }
-                set
-                {
-                    _UsuarioData = value;
-                }
+                return _UsuarioData;
             }
-
-            public  Usuario GetOne(int ID)
+            set
             {
+                _UsuarioData = value;
+            }
+        }
+
+        public Usuario GetOne(int ID)
+        {
             Usuario usr = new Usuario();
-            
+
             try
             {
 
@@ -47,14 +84,14 @@ namespace Business.Logic
 
                 if (drUsuarios.Read())
                 {
-                     
+
                     usr.ID = (int)drUsuarios["id_usuario"];
                     usr.NombreUsuario = (string)drUsuarios["nombre_usuarios"];
                     usr.Clave = (string)drUsuarios["clave"];
                     usr.Nombre = (string)drUsuarios["nombre"];
                     usr.Apellido = (string)drUsuarios["apellido"];
                     usr.Email = (string)drUsuarios["email"];
- 
+
                 }
 
                 drUsuarios.Close();
@@ -72,46 +109,46 @@ namespace Business.Logic
             }
 
             //return UsuarioData.GetOne(ID);
-            return usr;    
+            return usr;
         }
-         
-         
-            public List<Usuario> GetAll()
-            {
-                try
-                {
-                    return UsuarioData.GetAll();
-                }
-                catch (Exception Ex)
-                {
-                    Exception ExcepcionManejada = new Exception("Error al recuperar lista de usuarios", Ex);
-                    throw ExcepcionManejada;
-                }
 
+
+        public List<Usuario> GetAll()
+        {
+            try
+            {
+                return UsuarioData.GetAll();
             }
-   
-            public void Save(Usuario usuario)
+            catch (Exception Ex)
             {
+                Exception ExcepcionManejada = new Exception("Error al recuperar lista de usuarios", Ex);
+                throw ExcepcionManejada;
+            }
 
-                if (usuario.State == BusinessEntity.States.Deleted)
-                {
+        }
+
+        public void Save(Usuario usuario)
+        {
+
+            if (usuario.State == BusinessEntity.States.Deleted)
+            {
                 this.Delete(usuario.ID);
-                }
-                else if (usuario.State == BusinessEntity.States.New)
-                {
+            }
+            else if (usuario.State == BusinessEntity.States.New)
+            {
                 this.Insert(usuario);
-                } 
-                else if (usuario.State == BusinessEntity.States.Modified)
-                {
+            }
+            else if (usuario.State == BusinessEntity.States.Modified)
+            {
                 this.Update(usuario);
-                }
-            
+            }
+
             usuario.State = BusinessEntity.States.Unmodified;
 
-            }
- 
-            public void Delete(int ID)
-            {
+        }
+
+        public void Delete(int ID)
+        {
             try
             {
                 this.OpenConnection();
@@ -119,7 +156,8 @@ namespace Business.Logic
                 cmdDelete.Parameters.Add("@id", SqlDbType.Int).Value = ID;
                 cmdDelete.ExecuteNonQuery();
 
-            }catch(Exception Ex)
+            }
+            catch (Exception Ex)
             {
                 Exception ExcepcionManjeada = new Exception("Error al eliminar usuario", Ex);
                 throw ExcepcionManjeada;
@@ -128,28 +166,29 @@ namespace Business.Logic
             {
                 this.CloseConnection();
             }
-                UsuarioData.Delete(ID);
-            }
+            UsuarioData.Delete(ID);
+        }
 
-            protected void Update(Usuario usuario)
-             {
+        protected void Update(Usuario usuario)
+        {
             try
             {
                 this.OpenConnection();
                 SqlCommand cmdSave = new SqlCommand("UPDATE usuarios SET nombre_usuario = @nombre_usuario, clave = @clave, " +
-                    "habilitado = @habilitado, nombre = @nombre, apellido = @apeliido, email = @email " + 
-                    "WHERE id_usuario = @id " ,sqlConn);
+                    "habilitado = @habilitado, nombre = @nombre, apellido = @apeliido, email = @email " +
+                    "WHERE id_usuario = @id ", sqlConn);
 
-                cmdSave.Parameters.Add("@id",SqlDbType.Int).Value = usuario.ID ;
-                cmdSave.Parameters.Add("@nombre_usuario", SqlDbType.VarChar,50).Value = usuario.NombreUsuario ;
-                cmdSave.Parameters.Add("@clave", SqlDbType.VarChar,50).Value = usuario.Clave ;
-                cmdSave.Parameters.Add("@habilitado", SqlDbType.Bit).Value = usuario.Habilitado ;
-                cmdSave.Parameters.Add("@nombre", SqlDbType.VarChar, 50).Value = usuario.Nombre ;
-                cmdSave.Parameters.Add("@apellido", SqlDbType.VarChar, 50).Value = usuario.Apellido ;
-                cmdSave.Parameters.Add("@email", SqlDbType.VarChar, 50).Value = usuario.Email ;
+                cmdSave.Parameters.Add("@id", SqlDbType.Int).Value = usuario.ID;
+                cmdSave.Parameters.Add("@nombre_usuario", SqlDbType.VarChar, 50).Value = usuario.NombreUsuario;
+                cmdSave.Parameters.Add("@clave", SqlDbType.VarChar, 50).Value = usuario.Clave;
+                cmdSave.Parameters.Add("@habilitado", SqlDbType.Bit).Value = usuario.Habilitado;
+                cmdSave.Parameters.Add("@nombre", SqlDbType.VarChar, 50).Value = usuario.Nombre;
+                cmdSave.Parameters.Add("@apellido", SqlDbType.VarChar, 50).Value = usuario.Apellido;
+                cmdSave.Parameters.Add("@email", SqlDbType.VarChar, 50).Value = usuario.Email;
 
                 cmdSave.ExecuteNonQuery();
-            }catch(Exception Ex)
+            }
+            catch (Exception Ex)
             {
                 Exception ExceptionManejada = new Exception("Erorr al modificar datos del usuario", Ex);
                 throw ExceptionManejada;
@@ -160,9 +199,9 @@ namespace Business.Logic
 
             }
 
-            }
+        }
 
-            protected void Insert(Usuario usuario)
+        protected void Insert(Usuario usuario)
         {
             try
             {
@@ -179,7 +218,7 @@ namespace Business.Logic
                 cmdSave.Parameters.Add("@nombre", SqlDbType.VarChar, 50).Value = usuario.Nombre;
                 cmdSave.Parameters.Add("@apellido", SqlDbType.VarChar, 50).Value = usuario.Apellido;
                 cmdSave.Parameters.Add("@email", SqlDbType.VarChar, 50).Value = usuario.Email;
-         
+
                 cmdSave.ExecuteNonQuery();
             }
             catch (Exception Ex)
@@ -195,4 +234,6 @@ namespace Business.Logic
 
 
         }
+    }
+} 
 
