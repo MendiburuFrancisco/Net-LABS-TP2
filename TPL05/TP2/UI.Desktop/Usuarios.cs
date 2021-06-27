@@ -25,18 +25,20 @@ namespace UI.Desktop
 
         }
 
-        
+
         public void Listar()
         {
+            
             UsuarioLogic ul = new UsuarioLogic();
-            this.dgvUsuarios.DataSource = ul.GetAll();
+            try
+            {
+                dgvUsuarios.DataSource = ul.GetAll();
+            }
+            catch (Exception ExcepcionManejada)
+            {
+                MessageBox.Show(ExcepcionManejada.Message, "Error Base de Datos", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-            id.DataPropertyName = "ID";
-            nombre.DataPropertyName = "Nombre";
-            apellido.DataPropertyName = "Apellido";
-            usuario.DataPropertyName = "NombreUsuario";
-            email.DataPropertyName = "EMail";
-            habilitado.DataPropertyName = "Habilitado";
+            }
         }
 
         private void Usuarios_Load(object sender, EventArgs e)

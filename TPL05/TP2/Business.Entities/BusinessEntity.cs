@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Business.Entities
 {
     public class BusinessEntity
@@ -32,6 +33,7 @@ namespace Business.Entities
         {
             Deleted, New, Modified, Unmodified
         }
+
     }
 
 
